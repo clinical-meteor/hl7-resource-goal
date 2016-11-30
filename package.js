@@ -1,6 +1,6 @@
 Package.describe({
   name: 'clinical:hl7-resource-goal',
-  version: '1.2.3',
+  version: '1.2.4',
   summary: 'HL7 FHIR Resource - Goal',
   git: 'https://github.com/clinical-meteor/hl7-resource-goal',
   documentation: 'README.md'
@@ -17,7 +17,7 @@ Package.onUse(function (api) {
   api.use('prime8consulting:meteor-oauth2-server@0.0.2');
 
   api.use('clinical:base-model@1.3.5');
-  api.use('clinical:hl7-resource-datatypes@0.4.7');
+  api.use('clinical:hl7-resource-datatypes@0.5.6');
 
   api.addFiles('lib/hl7-resource-goal.js', ['client', 'server']);
   api.addFiles('server/rest.js', 'server');
