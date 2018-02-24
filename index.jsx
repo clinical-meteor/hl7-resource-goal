@@ -2,6 +2,7 @@
 
 import GoalsPage from './client/GoalsPage';
 import GoalsTable from './client/GoalsTable';
+import ActivitiesTable from './client/ActivitiesTable';
 import { Goal, Goals, GoalSchema } from './lib/Goals';
 
 var DynamicRoutes = [{
@@ -23,7 +24,8 @@ export {
 
   GoalsPage,
   GoalsTable,
-
+  ActivitiesTable,
+  
   Goal,
   Goals,
   GoalSchema
