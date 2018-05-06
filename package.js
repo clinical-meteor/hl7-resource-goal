@@ -1,6 +1,6 @@
 Package.describe({
   name: 'clinical:hl7-resource-goal',
-  version: '1.2.10',
+  version: '1.2.11',
   summary: 'HL7 FHIR Resource - Goal',
   git: 'https://github.com/clinical-meteor/hl7-resource-goal',
   documentation: 'README.md'

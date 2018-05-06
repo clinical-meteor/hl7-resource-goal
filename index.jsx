@@ -24,11 +24,7 @@ export {
 
   GoalsPage,
   GoalsTable,
-  ActivitiesTable,
-  
-  Goal,
-  Goals,
-  GoalSchema
+  ActivitiesTable
 };
 
 
