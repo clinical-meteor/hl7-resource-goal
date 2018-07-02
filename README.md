@@ -1,13 +1,20 @@
-##clinical:hl7-resource-goal
+## clinical:hl7-resource-goal
 
-HL7 FHIR Resource - Goal
+#### Licensing  
 
-===============================
-#### Conformance Statement  
+![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-The resource in this package implements the FHIR Patient Resource DTSU2 schema provided at  [https://www.hl7.org/fhir/goal.html](https://www.hl7.org/fhir/goal.html).  
 
-===============================
+#### Integration & Verification Tests  
+
+[![CircleCI](https://circleci.com/gh/clinical-meteor/hl7-resource-endpoint/tree/master.svg?style=svg)](https://circleci.com/gh/clinical-meteor/hl7-resource-endpoint/tree/master)
+
+
+#### API Reference  
+
+The resource in this package implements Contract resource schema, specified at [https://www.hl7.org/fhir/endpoint.html](https://www.hl7.org/fhir/endpoint.html).  
+
+
 #### Installation  
 
 ````bash
@@ -19,7 +26,6 @@ INITIALIZE=true meteor
 ````
 
 
-===============================
 #### Example   
 
 ```js
@@ -29,7 +35,7 @@ var newGoal = {
 Goals.insert(newGoal);
 ```
 
-===============================
+
 #### Extending the Schema
 
 ```js
@@ -45,12 +51,8 @@ ExtendedGoalSchema = new SimpleSchema([
 Goals.attachSchema( ExtendedGoalSchema );
 ```
 
-===============================
+
 #### Utilities  
 
 If you're working with HL7 FHIR Resources, we recommend using [Postman](https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=en).
 
-===============================
-#### Licensing  
-
-![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
