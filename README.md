@@ -7,12 +7,12 @@
 
 #### Integration & Verification Tests  
 
-[![CircleCI](https://circleci.com/gh/clinical-meteor/hl7-resource-endpoint/tree/master.svg?style=svg)](https://circleci.com/gh/clinical-meteor/hl7-resource-endpoint/tree/master)
+[![CircleCI](https://circleci.com/gh/clinical-meteor/hl7-resource-goal/tree/master.svg?style=svg)](https://circleci.com/gh/clinical-meteor/hl7-resource-goal/tree/master)
 
 
 #### API Reference  
 
-The resource in this package implements Contract resource schema, specified at [https://www.hl7.org/fhir/endpoint.html](https://www.hl7.org/fhir/endpoint.html).  
+The resource in this package implements Goal resource schema, specified at [https://www.hl7.org/fhir/DSTU2/goal.html](https://www.hl7.org/fhir/DSTU2/goal.html).  
 
 
 #### Installation  
