@@ -56,3 +56,7 @@ Goals.attachSchema( ExtendedGoalSchema );
 
 If you're working with HL7 FHIR Resources, we recommend using [Postman](https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=en).
 
+   
+#### Acknowledgements     
+
+Many thanks to DxRx Medical and Progressive Health of Delaware for their generous support in sponsoring this package.
