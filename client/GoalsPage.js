@@ -12,6 +12,8 @@ import React  from 'react';
 import { ReactMeteorData } from 'meteor/react-meteor-data';
 import ReactMixin  from 'react-mixin';
 
+Session.setDefault('selectedGoalId', false);
+
 export class GoalsPage extends React.Component {
   getMeteorData() {
     let data = {
@@ -24,8 +26,15 @@ export class GoalsPage extends React.Component {
       },
       tabIndex: Session.get('goalPageTabIndex'),
       goalSearchFilter: Session.get('goalSearchFilter'),
-      currentGoal: Session.get('selectedGoal')
+      selectedGoalId: Session.get('selectedGoalId'),
+      selectedGoal: false
     };
+
+    if (Session.get('selectedGoalId')){
+      data.selectedGoal = Goals.findOne({_id: Session.get('selectedGoalId')});
+    } else {
+      data.selectedGoal = false;
+    }
 
     data.style = Glass.blur(data.style);
     data.style.appbar = Glass.darkroom(data.style.appbar);
@@ -39,12 +48,12 @@ export class GoalsPage extends React.Component {
   }
 
   onNewTab(){
-    Session.set('selectedGoal', false);
+    Session.set('selectedGoalId', false);
     Session.set('goalUpsert', false);
   }
 
   render() {
-    if(process.env.NODE_ENV === "test") console.log('In GoalsPage render');
+    if(process.env.NODE_ENV === "test") console.log('GoalsPage.render()');
     return (
       <div id='goalsPage'>
         <VerticalCanvas>
@@ -53,13 +62,21 @@ export class GoalsPage extends React.Component {
             <CardText>
               <Tabs id="goalsPageTabs" default value={this.data.tabIndex} onChange={this.handleTabChange} initialSelectedIndex={1}>
                <Tab className='newGoalTab' label='New' style={this.data.style.tab} onActive={ this.onNewTab } value={0}>
-                 <GoalDetail id='newGoal' />
+                 <GoalDetail 
+                  id='newGoal' 
+                  fhirVersion={ this.data.fhirVersion }
+                  goal={ this.data.selectedGoal }
+                  goalId={ this.data.selectedGoalId } />  
                </Tab>
                <Tab className="goalListTab" label='Goals' onActive={this.handleActive} style={this.data.style.tab} value={1}>
                 <GoalsTable />
                </Tab>
                <Tab className="goalDetailsTab" label='Detail' onActive={this.handleActive} style={this.data.style.tab} value={2}>
-                 <GoalDetail id='goalDetails' />
+                 <GoalDetail 
+                  id='goalDetails' 
+                  fhirVersion={ this.data.fhirVersion }
+                  goal={ this.data.selectedGoal }
+                  goalId={ this.data.selectedGoalId } />  
                </Tab>
              </Tabs>
             </CardText>

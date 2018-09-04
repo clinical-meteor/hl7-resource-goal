@@ -1,59 +1,96 @@
+// =======================================================================
+// Using DSTU2  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//
+// https://www.hl7.org/fhir/DSTU2/goal.html
+//
+//
+// =======================================================================
+
+
 import { CardActions, CardText } from 'material-ui/Card';
 
-import { Bert } from 'meteor/clinical:alert';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import { ReactMeteorData } from 'meteor/react-meteor-data';
 import ReactMixin from 'react-mixin';
 import TextField from 'material-ui/TextField';
-import { get } from 'lodash';
+import { get, set} from 'lodash';
 import PropTypes from 'prop-types';
 
-let defaultGoal = {
-  "resourceType": "Goal",
-  'description': '',
-  'priority': {
-    'text': ''
-  },
-  'status': ''
-};
 
 
 
 Session.setDefault('goalUpsert', false);
-Session.setDefault('selectedGoal', false);
-
 
 export default class GoalDetail extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      goalId: false,
+      goal: {
+        resourceType: "Goal",
+        description: '',
+        priority: {
+          text: ''
+        },
+        status: ''
+      },
+      form: {
+        description: '',
+        priority: '',
+        status: ''
+      }
+    }
+  }
+  dehydrateFhirResource(goal) {
+    let formData = Object.assign({}, this.state.form);
+
+    formData.description = get(goal, 'description')    
+    formData.priority = get(goal, 'priority')
+    formData.status = get(goal, 'status')
+
+    return formData;
+  }
+  shouldComponentUpdate(nextProps){
+    process.env.NODE_ENV === "test" && console.log('GoalDetail.shouldComponentUpdate()', nextProps, this.state)
+    let shouldUpdate = true;
+
+    // both false; don't take any more updates
+    if(nextProps.goal === this.state.goal){
+      shouldUpdate = false;
+    }
+
+    // received an goal from the table; okay lets update again
+    if(nextProps.goalId !== this.state.goalId){
+      this.setState({goalId: nextProps.goalId})
+      
+      if(nextProps.goal){
+        this.setState({goal: nextProps.goal})     
+        this.setState({form: this.dehydrateFhirResource(nextProps.goal)})       
+      }
+      shouldUpdate = true;
+    }
+ 
+    return shouldUpdate;
+  }
   getMeteorData() {
     let data = {
-      goalId: false,
-      goal: defaultGoal
+      goalId: this.props.goalId,
+      goal: false,
+      form: this.state.form
     };
 
-    if (Session.get('goalUpsert')) {
-      data.goal = Session.get('goalUpsert');
-    } else {
-      if (Session.get('selectedGoal')) {
-        data.goalId = Session.get('selectedGoal');
-        console.log("selectedGoal", Session.get('selectedGoal'));
-
-        let selectedGoal = Goals.findOne({_id: Session.get('selectedGoal')});
-        console.log("selectedGoal", selectedGoal);
-
-        if (selectedGoal) {
-          data.goal = selectedGoal;
-        }
-      } else {
-        data.goal = defaultGoal;
-      }
-
+    if(this.props.goal){
+      data.goal = this.props.goal;
     }
 
     return data;
   }
 
   render() {
+    if(process.env.NODE_ENV === "test") console.log('GoalDetail.render()', this.state)
+    let formData = this.state.form;
+
     return (
       <div id={this.props.id} className="goalDetail">
         <CardText>
@@ -62,8 +99,10 @@ export default class GoalDetail extends React.Component {
             ref='description'
             name='description'
             floatingLabelText='Description'
-            value={ get(this, 'data.goal.description') ? get(this, 'data.goal.description') : ''}
+            hintText='Quit Smoking'
+            value={ get(formData, 'description', '') }
             onChange={ this.changeState.bind(this, 'description')}
+            floatingLabelFixed={true}
             fullWidth
             /><br/>
           <TextField
@@ -71,8 +110,10 @@ export default class GoalDetail extends React.Component {
             ref='priority'
             name='priority'
             floatingLabelText='Priority'
-            value={ get(this, 'data.goal.priority.text') ? get(this, 'data.goal.priority.text') : ''}
+            value={ get(formData, 'priority', '') }
             onChange={ this.changeState.bind(this, 'priority')}
+            hintText='high | medium |low'
+            floatingLabelFixed={true}
             fullWidth
             /><br/>
           <TextField
@@ -80,13 +121,12 @@ export default class GoalDetail extends React.Component {
             ref='status'
             name='status'
             floatingLabelText='Status'
-            value={ get(this, 'data.goal.status') ? get(this, 'data.goal.status') : ''}
+            value={ get(formData, 'status', '')}
             onChange={ this.changeState.bind(this, 'status')}
+            hintText='proposed | planned | accepted | rejected | in-progress | achieved | sustaining | on-hold | cancelled'
+            floatingLabelFixed={true}
             fullWidth
             /><br/>
-
-
-
 
         </CardText>
         <CardActions>
@@ -101,7 +141,7 @@ export default class GoalDetail extends React.Component {
     if (goalId) {
       return (
         <div>
-          <RaisedButton id="saveGoalButton" label="Save" primary={true} onClick={this.handleSaveButton.bind(this)} style={{marginRight: '20px'}} />
+          <RaisedButton id="updateGoalButton" label="Save" primary={true} onClick={this.handleSaveButton.bind(this)} style={{marginRight: '20px'}} />
           <RaisedButton id="deleteGoalButton" label="Delete" onClick={this.handleDeleteButton.bind(this)} />
         </div>
       );
@@ -111,68 +151,101 @@ export default class GoalDetail extends React.Component {
       );
     }
   }
-
-
-
-  // this could be a mixin
-  changeState(field, event, value){
-    let goalUpdate;
-
-    if(process.env.NODE_ENV === "test") console.log("GoalDetail.changeState", field, event, value);
-
-    // by default, assume there's no other data and we're creating a new goal
-    if (Session.get('goalUpsert')) {
-      goalUpdate = Session.get('goalUpsert');
-    } else {
-      goalUpdate = defaultGoal;
-    }
-
-
-
-    // if there's an existing goal, use them
-    if (Session.get('selectedGoal')) {
-      goalUpdate = this.data.goal;
-    }
+  componentDidUpdate(props){
+    if(process.env.NODE_ENV === "test") console.log('GoalDetail.componentDidUpdate()', props, this.state)
+  }
+  updateFormData(formData, field, textValue){
+    if(process.env.NODE_ENV === "test") console.log("GoalDetail.updateFormData", formData, field, textValue);
 
     switch (field) {
       case "description":
-        goalUpdate.description = value;
+        set(formData, 'description', textValue)
         break;
       case "priority":
-        goalUpdate.priority.text = value;
-        break;
+        set(formData, 'priority', textValue)
+        break;        
       case "status":
-        goalUpdate.status = value;
+        set(formData, 'status', textValue)
         break;
-
+      default:
     }
 
-    if(process.env.NODE_ENV === "test") console.log("goalUpdate", goalUpdate);
-    Session.set('goalUpsert', goalUpdate);
+    if(process.env.NODE_ENV === "test") console.log("formData", formData);
+    return formData;
+  }
+  updateGoal(goalData, field, textValue){
+    if(process.env.NODE_ENV === "test") console.log("GoalDetail.updateDevice", goalData, field, textValue);
+
+    switch (field) {
+      case "description":
+        set(goalData, 'description', textValue)
+        break;
+      case "priority":
+        set(goalData, 'priority', textValue)
+        break;        
+      case "status":
+        set(goalData, 'status', textValue)
+        break;    
+    }
+    return goalData;
+  }
+
+  changeState(field, event, textValue){
+    if(process.env.NODE_ENV === "test") console.log("   ");
+    if(process.env.NODE_ENV === "test") console.log("GoalDetail.changeState", field, textValue);
+    if(process.env.NODE_ENV === "test") console.log("this.state", this.state);
+
+    let formData = Object.assign({}, this.state.form);
+    let goalData = Object.assign({}, this.state.goal);
+
+    formData = this.updateFormData(formData, field, textValue);
+    goalData = this.updateGoal(goalData, field, textValue);
+
+    if(process.env.NODE_ENV === "test") console.log("goalData", goalData);
+    if(process.env.NODE_ENV === "test") console.log("formData", formData);
+
+    this.setState({goal: goalData})
+    this.setState({form: formData})
   }
 
   handleSaveButton(){
-    let goalUpdate = Session.get('goalUpsert', goalUpdate);
+    if(process.env.NODE_ENV === "test") console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&&')
+    console.log('Saving a new Goal...', this.state)
 
-    if(process.env.NODE_ENV === "test") console.log("goalUpdate", goalUpdate);
+    let self = this;
+    let fhirGoalData = Object.assign({}, this.state.goal);
+
+    if(process.env.NODE_ENV === "test") console.log('fhirGoalData', fhirGoalData);
 
 
-    if (Session.get('selectedGoal')) {
-      if(process.env.NODE_ENV === "test") console.log("Updating goal...");
-      delete goalUpdate._id;
+    let goalValidator = ConditionSchema.newContext();
+    goalValidator.validate(fhirGoalData)
+
+    console.log('IsValid: ', goalValidator.isValid())
+    console.log('ValidationErrors: ', goalValidator.validationErrors());
+
+
+
+    if (this.data.goalId) {
+      if(process.env.NODE_ENV === "test") console.log("Updating Goal...");
+      delete fhirGoalData._id;
 
       // not sure why we're having to respecify this; fix for a bug elsewhere
-      goalUpdate.resourceType = 'Goal';
+      fhirGoalData.resourceType = 'Goal';
 
       Goals.update(
-        {_id: Session.get('selectedGoal')}, {$set: goalUpdate }, function(error, result) {
+        {_id: this.data.goalId}, {$set: fhirGoalData }, {
+          validate: false, 
+          filter: false, 
+          removeEmptyStrings: false
+        }, function(error, result) {
           if (error) {
             console.log("error", error);
 
             Bert.alert(error.reason, 'danger');
           }
           if (result) {
-            HipaaLogger.logEvent({eventType: "update", userId: Meteor.userId(), userName: Meteor.user().fullName(), collectionName: "Goals", recordId: Session.get('selectedGoal')});
+            HipaaLogger.logEvent({eventType: "update", userId: Meteor.userId(), userName: Meteor.user().fullName(), collectionName: "Goals", recordId: self.data.goalId});
             Session.set('goalPageTabIndex', 1);
             Session.set('selectedGoal', false);
             Session.set('goalUpsert', false);
@@ -181,9 +254,13 @@ export default class GoalDetail extends React.Component {
         });
     } else {
 
-      if(process.env.NODE_ENV === "test") console.log("create a new goal", goalUpdate);
+      if(process.env.NODE_ENV === "test") console.log("create a new goal", fhirGoalData);
 
-      Goals.insert(goalUpdate, function(error, result) {
+      Goals.insert(fhirGoalData, {
+        validate: false, 
+        filter: false, 
+        removeEmptyStrings: false
+      }, function(error, result) {
         if (error) {
           console.log("error", error);
           Bert.alert(error.reason, 'danger');
@@ -204,12 +281,13 @@ export default class GoalDetail extends React.Component {
   }
 
   handleDeleteButton(){
-    Goals.remove({_id: Session.get('selectedGoal')}, function(error, result){
+    let self = this;
+    Goals.remove({_id: this.data.goalId}, function(error, result){
       if (error) {
         Bert.alert(error.reason, 'danger');
       }
       if (result) {
-        HipaaLogger.logEvent({eventType: "delete", userId: Meteor.userId(), userName: Meteor.user().fullName(), collectionName: "Goals", recordId: Session.get('selectedGoal')});
+        HipaaLogger.logEvent({eventType: "delete", userId: Meteor.userId(), userName: Meteor.user().fullName(), collectionName: "Goals", recordId: self.data.goalId});
         Session.set('goalPageTabIndex', 1);
         Session.set('selectedGoal', false);
         Session.set('goalUpsert', false);
@@ -221,6 +299,8 @@ export default class GoalDetail extends React.Component {
 
 
 GoalDetail.propTypes = {
-  hasUser: PropTypes.object
+  id: PropTypes.string,
+  goalId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  goal: PropTypes.oneOfType([PropTypes.object, PropTypes.bool])
 };
 ReactMixin(GoalDetail.prototype, ReactMeteorData);

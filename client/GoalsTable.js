@@ -4,6 +4,7 @@ import React from 'react';
 import { ReactMeteorData } from 'meteor/react-meteor-data';
 import ReactMixin from 'react-mixin';
 import { Table } from 'react-bootstrap';
+import { get } from 'lodash';
 
 export default class GoalsTable extends React.Component {
 
@@ -31,7 +32,7 @@ export default class GoalsTable extends React.Component {
 
   rowClick(id){
     Session.set('goalsUpsert', false);
-    Session.set('selectedGoal', id);
+    Session.set('selectedGoalId', id);
     Session.set('goalPageTabIndex', 2);
   };
   render () {
@@ -44,13 +45,13 @@ export default class GoalsTable extends React.Component {
       };
 
       if(this.data.goals[i].description){
-        newRow.description = this.data.goals[i].description;
+        newRow.description = get(this.data.goals[i], 'description');
       }
       if(this.data.goals[i].priority){
-        newRow.priority = this.data.goals[i].priority.text;
+        newRow.priority = get(this.data.goals[i], 'priority');
       }
       if(this.data.goals[i].status){
-        newRow.status = this.data.goals[i].status;
+        newRow.status = get(this.data.goals[i], 'status');
       }
 
       tableRows.push(
@@ -64,7 +65,7 @@ export default class GoalsTable extends React.Component {
     }
 
     return(
-      <Table id='goalsTable' responses hover >
+      <Table id='goalsTable' hover >
         <thead>
           <tr>
             <th className='description'>description</th>
