@@ -65,8 +65,7 @@ export class GoalsPage extends React.Component {
                  <GoalDetail 
                   id='newGoal' 
                   fhirVersion={ this.data.fhirVersion }
-                  goal={ this.data.selectedGoal }
-                  goalId={ this.data.selectedGoalId } />  
+                 />  
                </Tab>
                <Tab className="goalListTab" label='Goals' onActive={this.handleActive} style={this.data.style.tab} value={1}>
                 <GoalsTable />
