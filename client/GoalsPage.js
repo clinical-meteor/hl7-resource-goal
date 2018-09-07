@@ -13,6 +13,7 @@ import { ReactMeteorData } from 'meteor/react-meteor-data';
 import ReactMixin  from 'react-mixin';
 
 Session.setDefault('selectedGoalId', false);
+Session.setDefault('fhirVersion', 'v1.0.2');
 
 export class GoalsPage extends React.Component {
   getMeteorData() {
@@ -27,6 +28,7 @@ export class GoalsPage extends React.Component {
       tabIndex: Session.get('goalPageTabIndex'),
       goalSearchFilter: Session.get('goalSearchFilter'),
       selectedGoalId: Session.get('selectedGoalId'),
+      fhirVersion: Session.get('fhirVersion'),
       selectedGoal: false
     };
 
