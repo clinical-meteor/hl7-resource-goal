@@ -235,7 +235,7 @@ export default class GoalDetail extends React.Component {
 
       Goals.update(
         {_id: this.data.goalId}, {$set: fhirGoalData }, {
-          validate: false, 
+          validate: true, 
           filter: false, 
           removeEmptyStrings: false
         }, function(error, result) {
@@ -257,7 +257,7 @@ export default class GoalDetail extends React.Component {
       if(process.env.NODE_ENV === "test") console.log("create a new goal", fhirGoalData);
 
       Goals.insert(fhirGoalData, {
-        validate: false, 
+        validate: true, 
         filter: false, 
         removeEmptyStrings: false
       }, function(error, result) {
