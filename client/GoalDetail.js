@@ -235,9 +235,9 @@ export default class GoalDetail extends React.Component {
 
       Goals.update(
         {_id: this.data.goalId}, {$set: fhirGoalData }, {
-          validate: true, 
-          filter: false, 
-          removeEmptyStrings: false
+          validate: get(Meteor, 'settings.public.defaults.schemas.validate', false), 
+          filter: get(Meteor, 'settings.public.defaults.schemas.filter', false), 
+          removeEmptyStrings: get(Meteor, 'settings.public.defaults.schemas.removeEmptyStrings', false)
         }, function(error, result) {
           if (error) {
             console.log("error", error);
@@ -257,9 +257,9 @@ export default class GoalDetail extends React.Component {
       if(process.env.NODE_ENV === "test") console.log("create a new goal", fhirGoalData);
 
       Goals.insert(fhirGoalData, {
-        validate: true, 
-        filter: false, 
-        removeEmptyStrings: false
+        validate: get(Meteor, 'settings.public.defaults.schemas.validate', false), 
+        filter: get(Meteor, 'settings.public.defaults.schemas.filter', false), 
+        removeEmptyStrings: get(Meteor, 'settings.public.defaults.schemas.removeEmptyStrings', false)
       }, function(error, result) {
         if (error) {
           console.log("error", error);
