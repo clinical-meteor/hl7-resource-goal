@@ -18,10 +18,6 @@ import { get, set} from 'lodash';
 import PropTypes from 'prop-types';
 
 
-
-
-Session.setDefault('goalUpsert', false);
-
 export default class GoalDetail extends React.Component {
   constructor(props) {
     super(props);
@@ -130,7 +126,7 @@ export default class GoalDetail extends React.Component {
 
         </CardText>
         <CardActions>
-          { this.determineButtons(this.data.goalId) }
+          { this.determineButtons(this.state.goalId) }
         </CardActions>
       </div>
     );
@@ -226,19 +222,15 @@ export default class GoalDetail extends React.Component {
 
 
 
-    if (this.data.goalId) {
+    if (this.state.goalId) {
       if(process.env.NODE_ENV === "test") console.log("Updating Goal...");
       delete fhirGoalData._id;
 
       // not sure why we're having to respecify this; fix for a bug elsewhere
       fhirGoalData.resourceType = 'Goal';
 
-      Goals.update(
-        {_id: this.data.goalId}, {$set: fhirGoalData }, {
-          validate: get(Meteor, 'settings.public.defaults.schemas.validate', false), 
-          filter: get(Meteor, 'settings.public.defaults.schemas.filter', false), 
-          removeEmptyStrings: get(Meteor, 'settings.public.defaults.schemas.removeEmptyStrings', false)
-        }, function(error, result) {
+      Goals._collection.update(
+        {_id: this.state.goalId}, {$set: fhirGoalData }, function(error, result) {
           if (error) {
             console.log("error", error);
 
@@ -248,7 +240,6 @@ export default class GoalDetail extends React.Component {
             HipaaLogger.logEvent({eventType: "update", userId: Meteor.userId(), userName: Meteor.user().fullName(), collectionName: "Goals", recordId: self.data.goalId});
             Session.set('goalPageTabIndex', 1);
             Session.set('selectedGoal', false);
-            Session.set('goalUpsert', false);
             Bert.alert('Goal updated!', 'success');
           }
         });
@@ -256,11 +247,7 @@ export default class GoalDetail extends React.Component {
 
       if(process.env.NODE_ENV === "test") console.log("create a new goal", fhirGoalData);
 
-      Goals.insert(fhirGoalData, {
-        validate: get(Meteor, 'settings.public.defaults.schemas.validate', false), 
-        filter: get(Meteor, 'settings.public.defaults.schemas.filter', false), 
-        removeEmptyStrings: get(Meteor, 'settings.public.defaults.schemas.removeEmptyStrings', false)
-      }, function(error, result) {
+      Goals._collection.insert(fhirGoalData, function(error, result) {
         if (error) {
           console.log("error", error);
           Bert.alert(error.reason, 'danger');
@@ -269,7 +256,6 @@ export default class GoalDetail extends React.Component {
           HipaaLogger.logEvent({eventType: "create", userId: Meteor.userId(), userName: Meteor.user().fullName(), collectionName: "Goals", recordId: result});
           Session.set('goalPageTabIndex', 1);
           Session.set('selectedGoal', false);
-          Session.set('goalUpsert', false);
           Bert.alert('Goal added!', 'success');
         }
       });
@@ -282,7 +268,7 @@ export default class GoalDetail extends React.Component {
 
   handleDeleteButton(){
     let self = this;
-    Goals.remove({_id: this.data.goalId}, function(error, result){
+    Goals.remove({_id: this.state.goalId}, function(error, result){
       if (error) {
         Bert.alert(error.reason, 'danger');
       }
@@ -290,7 +276,6 @@ export default class GoalDetail extends React.Component {
         HipaaLogger.logEvent({eventType: "delete", userId: Meteor.userId(), userName: Meteor.user().fullName(), collectionName: "Goals", recordId: self.data.goalId});
         Session.set('goalPageTabIndex', 1);
         Session.set('selectedGoal', false);
-        Session.set('goalUpsert', false);
         Bert.alert('Goal removed!', 'success');
       }
     });
