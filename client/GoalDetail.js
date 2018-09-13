@@ -268,7 +268,7 @@ export default class GoalDetail extends React.Component {
 
   handleDeleteButton(){
     let self = this;
-    Goals.remove({_id: this.state.goalId}, function(error, result){
+    Goals._collection.remove({_id: this.state.goalId}, function(error, result){
       if (error) {
         Bert.alert(error.reason, 'danger');
       }
