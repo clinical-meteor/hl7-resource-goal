@@ -5,12 +5,14 @@ import { GlassCard, VerticalCanvas, Glass } from 'meteor/clinical:glass-ui';
 import GoalDetail from './GoalDetail';
 import GoalsTable from './GoalsTable';
 
+
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
 
 import React  from 'react';
 import { ReactMeteorData } from 'meteor/react-meteor-data';
 import ReactMixin  from 'react-mixin';
+import PropTypes from 'prop-types';
 
 Session.setDefault('selectedGoalId', false);
 Session.setDefault('fhirVersion', 'v1.0.2');

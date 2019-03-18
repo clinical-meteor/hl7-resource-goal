@@ -3,10 +3,13 @@ import { ReactMeteorData } from 'meteor/react-meteor-data';
 import ReactMixin from 'react-mixin';
 import { Table } from 'react-bootstrap';
 import Toggle from 'material-ui/Toggle';
+import PropTypes from 'prop-types';
+import { FaTags, FaCode, FaPuzzlePiece, FaLock  } from 'react-icons/fa';
+import { get } from 'lodash';
 
 Session.setDefault('deselectedActivities', []);
 
-export default class MedicationsTable extends React.Component {
+export default class ActivitiesTable extends React.Component {
   getMeteorData() {
 
     // this should all be handled by props
@@ -74,6 +77,58 @@ export default class MedicationsTable extends React.Component {
 
     return data;
   }
+  renderTogglesHeader(){
+    if (!this.props.hideToggle) {
+      return (
+        <th className="toggle">Toggle</th>
+      );
+    }
+  }
+  renderToggles(patientId ){
+    if (!this.props.hideToggle) {
+      return (
+        <td className="toggle">
+            <Toggle
+              defaultToggled={true}
+            />
+          </td>
+      );
+    }
+  }
+  renderIdentifierHeader(){
+    if (!this.props.hideIdentifier) {
+      return (
+        <th className="identifier">Identifier</th>
+      );
+    }
+  }
+  renderIdentifier(activity ){
+    if (!this.props.hideIdentifier) {
+      
+      return (
+        <td className='identifier'>{ get(activity, 'identifier[0].value') }</td>       );
+    }
+  }
+  renderActionIconsHeader(){
+    if (!this.props.hideActionIcons) {
+      return (
+        <th className='actionIcons' style={{minWidth: '120px'}}>Actions</th>
+      );
+    }
+  }
+  renderActionIcons(actionIcons ){
+    if (!this.props.hideActionIcons) {
+      return (
+        <td className='actionIcons' style={{minWidth: '120px'}}>
+          <FaLock style={{marginLeft: '2px', marginRight: '2px'}} />
+          <FaTags style={{marginLeft: '2px', marginRight: '2px'}} />
+          <FaCode style={{marginLeft: '2px', marginRight: '2px'}} />
+          <FaPuzzlePiece style={{marginLeft: '2px', marginRight: '2px'}} />          
+        </td>
+      );
+    }
+  } 
+
   handleChange(row, key, value) {
     const source = this.state.source;
     source[row][key] = value;
@@ -98,12 +153,9 @@ export default class MedicationsTable extends React.Component {
     for (var i = 0; i < this.data.activity.length; i++) {
       tableRows.push(
       <tr className='activityRow' key={i} style={{cursor: 'pointer'}} onClick={ this.rowClick.bind('this', this.data.activity[i].reference.display) }>
-        <td className="check">
-          <Toggle
-            defaultToggled={true}
-            style={this.data.style.checkbox}
-          />
-        </td>
+        { this.renderToggles(this.data.activity[i]) }
+        { this.renderActionIcons(this.data.activity[i]) }
+        { this.renderIdentifier(this.data.activity[i]) }
         <td className="description">{this.data.activity[i].detail.description}</td>
         <td className="goal hidden-on-phone">{this.data.activity[i].reference.display}</td>
       </tr>);
@@ -111,12 +163,14 @@ export default class MedicationsTable extends React.Component {
 
 
     return(
-      <Table id="activitysTable" responses hover >
+      <Table id="activitysTable" hover >
         <thead>
           <tr>
-            <th className="check">prescribed</th>
-            <th className="description">description</th>
-            <th className="goal hidden-on-phone">associated goal</th>
+            { this.renderTogglesHeader() }
+            { this.renderActionIconsHeader() }
+            { this.renderIdentifierHeader() }
+            <th className="description">Description</th>
+            <th className="goal hidden-on-phone">Associated Goal</th>
           </tr>
         </thead>
         <tbody>
@@ -129,6 +183,13 @@ export default class MedicationsTable extends React.Component {
 }
 
 
-
-MedicationsTable.propTypes = {};
-ReactMixin(MedicationsTable.prototype, ReactMeteorData);
+ActivitiesTable.propTypes = {
+  data: PropTypes.array,
+  query: PropTypes.object,
+  paginationLimit: PropTypes.number,
+  hideIdentifier: PropTypes.bool,
+  hideToggle: PropTypes.bool,
+  hideActionIcons: PropTypes.bool
+};
+ActivitiesTable.propTypes = {};
+ReactMixin(ActivitiesTable.prototype, ReactMeteorData);

@@ -1,12 +1,14 @@
-import { Card, CardActions, CardMedia, CardText, CardTitle } from 'material-ui/Card';
+import { Card, CardActions, CardMedia, CardText, CardTitle, Toggle } from 'material-ui';
+import { FaTags, FaCode, FaPuzzlePiece, FaLock  } from 'react-icons/fa';
 
 import React from 'react';
 import { ReactMeteorData } from 'meteor/react-meteor-data';
 import ReactMixin from 'react-mixin';
 import { Table } from 'react-bootstrap';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
-export default class GoalsTable extends React.Component {
+export class GoalsTable extends React.Component {
 
   getMeteorData() {
 
@@ -29,7 +31,57 @@ export default class GoalsTable extends React.Component {
     return data;
   };
 
-
+  renderTogglesHeader(){
+    if (!this.props.hideToggle) {
+      return (
+        <th className="toggle">Toggle</th>
+      );
+    }
+  }
+  renderToggles(patientId ){
+    if (!this.props.hideToggle) {
+      return (
+        <td className="toggle">
+            <Toggle
+              defaultToggled={true}
+            />
+          </td>
+      );
+    }
+  }
+  renderIdentifierHeader(){
+    if (!this.props.hideIdentifier) {
+      return (
+        <th className="identifier">Identifier</th>
+      );
+    }
+  }
+  renderIdentifier(goals ){
+    if (!this.props.hideIdentifier) {
+      
+      return (
+        <td className='identifier'>{ get(goals, 'identifier[0].value') }</td>       );
+    }
+  }
+  renderActionIconsHeader(){
+    if (!this.props.hideActionIcons) {
+      return (
+        <th className='actionIcons' style={{minWidth: '120px'}}>Actions</th>
+      );
+    }
+  }
+  renderActionIcons(actionIcons ){
+    if (!this.props.hideActionIcons) {
+      return (
+        <td className='actionIcons' style={{minWidth: '120px'}}>
+          <FaLock style={{marginLeft: '2px', marginRight: '2px'}} />
+          <FaTags style={{marginLeft: '2px', marginRight: '2px'}} />
+          <FaCode style={{marginLeft: '2px', marginRight: '2px'}} />
+          <FaPuzzlePiece style={{marginLeft: '2px', marginRight: '2px'}} />          
+        </td>
+      );
+    }
+  } 
   rowClick(id){
     Session.set('goalsUpsert', false);
     Session.set('selectedGoalId', id);
@@ -48,18 +100,23 @@ export default class GoalsTable extends React.Component {
         newRow.description = get(this.data.goals[i], 'description');
       }
       if(this.data.goals[i].priority){
-        newRow.priority = get(this.data.goals[i], 'priority');
+        newRow.priority = get(this.data.goals[i], 'priority.text');
       }
       if(this.data.goals[i].status){
         newRow.status = get(this.data.goals[i], 'status');
       }
 
+      newRow.identifier = get(this.data.goals[i], 'identifier[0].value');
+
       tableRows.push(
         <tr key={i} className="goalRow" style={{cursor: "pointer"}} onClick={ this.rowClick.bind('this', this.data.goals[i]._id)} >
+          { this.renderToggles(this.data.goals[i]) }
+          { this.renderActionIcons(this.data.goals[i]) }
+          { this.renderIdentifier(this.data.goals[i]) }
 
           <td className='description'>{ newRow.description }</td>
           <td className='priority'>{ newRow.priority }</td>
-          <td className='status'>{ newRow.status }</td>
+          <td className='statusReason'>{ newRow.status }</td>
         </tr>
       )
     }
@@ -68,9 +125,12 @@ export default class GoalsTable extends React.Component {
       <Table id='goalsTable' hover >
         <thead>
           <tr>
-            <th className='description'>description</th>
-            <th className='priority'>priority</th>
-            <th className='status'>status</th>
+            { this.renderTogglesHeader() }
+            { this.renderActionIconsHeader() }
+            { this.renderIdentifierHeader() }
+            <th className='description'>Description</th>
+            <th className='priority'>Priority</th>
+            <th className='status'>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -81,5 +141,13 @@ export default class GoalsTable extends React.Component {
   }
 }
 
-
+GoalsTable.propTypes = {
+  data: PropTypes.array,
+  query: PropTypes.object,
+  paginationLimit: PropTypes.number,
+  hideIdentifier: PropTypes.bool,
+  hideToggle: PropTypes.bool,
+  hideActionIcons: PropTypes.bool
+};
 ReactMixin(GoalsTable.prototype, ReactMeteorData);
+export default GoalsTable;
