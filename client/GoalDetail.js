@@ -42,7 +42,7 @@ export default class GoalDetail extends React.Component {
     let formData = Object.assign({}, this.state.form);
 
     formData.description = get(goal, 'description')    
-    formData.priority = get(goal, 'priority')
+    formData.priority = get(goal, 'priority.text')
     formData.status = get(goal, 'status')
 
     return formData;

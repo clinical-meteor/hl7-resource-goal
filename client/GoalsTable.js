@@ -103,13 +103,15 @@ export class GoalsTable extends React.Component {
         status: ''
       };
 
-      if(this.data.goals[i].description){
+      if(get(this.data.goals[i], 'description')){
         newRow.description = get(this.data.goals[i], 'description');
       }
-      if(this.data.goals[i].priority){
+      if(get(this.data.goals[i], 'priority.text')){
         newRow.priority = get(this.data.goals[i], 'priority.text');
+      } else if(get(this.data.goals[i], 'priority')){
+        newRow.priority = String(get(this.data.goals[i], 'priority'));
       }
-      if(this.data.goals[i].status){
+      if(get(this.data.goals[i], 'status')){
         newRow.status = get(this.data.goals[i], 'status');
       }
 
@@ -123,7 +125,7 @@ export class GoalsTable extends React.Component {
 
           <td className='description'>{ newRow.description }</td>
           <td className='priority'>{ newRow.priority }</td>
-          <td className='statusReason'>{ newRow.status }</td>
+          <td className='status'>{ newRow.status }</td>
         </tr>
       )
     }
