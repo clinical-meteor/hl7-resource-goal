@@ -1,5 +1,6 @@
 import { Card, CardActions, CardMedia, CardText, CardTitle, Toggle } from 'material-ui';
 import { FaTags, FaCode, FaPuzzlePiece, FaLock  } from 'react-icons/fa';
+import { GoTrashcan } from 'react-icons/go'
 
 import React from 'react';
 import { ReactMeteorData } from 'meteor/react-meteor-data';
@@ -70,14 +71,16 @@ export class GoalsTable extends React.Component {
       );
     }
   }
-  renderActionIcons(actionIcons ){
+  renderActionIcons(goal){
     if (!this.props.hideActionIcons) {
       return (
         <td className='actionIcons' style={{minWidth: '120px'}}>
           <FaLock style={{marginLeft: '2px', marginRight: '2px'}} />
           <FaTags style={{marginLeft: '2px', marginRight: '2px'}} />
           <FaCode style={{marginLeft: '2px', marginRight: '2px'}} />
-          <FaPuzzlePiece style={{marginLeft: '2px', marginRight: '2px'}} />          
+          <FaPuzzlePiece style={{marginLeft: '2px', marginRight: '2px'}} />        
+          <GoTrashcan style={{marginLeft: '2px', marginRight: '2px'}} onClick={this.removeRecord.bind(this, goal._id)} />
+  
         </td>
       );
     }
@@ -87,6 +90,10 @@ export class GoalsTable extends React.Component {
     Session.set('selectedGoalId', id);
     Session.set('goalPageTabIndex', 2);
   };
+  removeRecord(_id){
+    console.log('removeRecord', _id)
+    Goals._collection.remove({_id: _id})
+  }
   render () {
     let tableRows = [];
     for (var i = 0; i < this.data.goals.length; i++) {
