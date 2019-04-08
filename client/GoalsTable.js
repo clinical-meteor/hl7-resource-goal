@@ -1,5 +1,8 @@
 import { Card, CardActions, CardMedia, CardText, CardTitle, Toggle } from 'material-ui';
 import { FaTags, FaCode, FaPuzzlePiece, FaLock  } from 'react-icons/fa';
+import { IoIosWarning  } from 'react-icons/io';
+
+
 import { GoTrashcan } from 'react-icons/go'
 
 import React from 'react';
@@ -44,7 +47,8 @@ export class GoalsTable extends React.Component {
       return (
         <td className="toggle">
             <Toggle
-              defaultToggled={true}
+              defaultT
+              oggled={true}
             />
           </td>
       );
@@ -73,14 +77,28 @@ export class GoalsTable extends React.Component {
   }
   renderActionIcons(goal){
     if (!this.props.hideActionIcons) {
+
+      // let warningStyle = {
+      //   marginLeft: '4px', 
+      //   marginRight: '4px', 
+      //   marginTop: '4px', 
+      //   fontSize: '120%%',
+      //   opacity: 0
+      // }
+
+      let iconStyle = {
+        marginLeft: '4px', 
+        marginRight: '4px', 
+        marginTop: '4px', 
+        fontSize: '120%'
+      }
+
+
       return (
-        <td className='actionIcons' style={{minWidth: '120px'}}>
-          <FaLock style={{marginLeft: '2px', marginRight: '2px'}} />
-          <FaTags style={{marginLeft: '2px', marginRight: '2px'}} />
-          <FaCode style={{marginLeft: '2px', marginRight: '2px'}} />
-          <FaPuzzlePiece style={{marginLeft: '2px', marginRight: '2px'}} />        
-          <GoTrashcan style={{marginLeft: '2px', marginRight: '2px'}} onClick={this.removeRecord.bind(this, goal._id)} />
-  
+        <td className='actionIcons' style={{minWidth: '120px', marginTop: '2px'}}>
+          {/* <IoIosWarning style={warningStyle} onClick={this.showSecurityDialog.bind(this, goal)} /> */}
+          <FaTags style={iconStyle} onClick={this.showSecurityDialog.bind(this, goal)} />
+          <GoTrashcan style={iconStyle} onClick={this.removeRecord.bind(this, goal._id)} />  
         </td>
       );
     }
@@ -93,6 +111,16 @@ export class GoalsTable extends React.Component {
   removeRecord(_id){
     console.log('removeRecord', _id)
     Goals._collection.remove({_id: _id})
+  }
+  showSecurityDialog(goal){
+    console.log('showSecurityDialog', goal)
+
+    Session.set('securityDialogResourceJson', goal);
+    Session.set('securityDialogResourceType', 'Goal');
+    Session.set('securityDialogResourceId', get(goal, '_id'));
+    Session.set('securityDialogOpen', true);
+
+    // alert(_id);
   }
   render () {
     let tableRows = [];
@@ -117,8 +145,16 @@ export class GoalsTable extends React.Component {
 
       newRow.identifier = get(this.data.goals[i], 'identifier[0].value');
 
+      let rowStyle = {
+        color: 'black',
+        cursor: 'pointer'
+      }
+      if(get(this.data.goals[i], 'modifierExtension[0].valueBoolean') === true){
+        rowStyle.color = "orange";
+      }
+
       tableRows.push(
-        <tr key={i} className="goalRow" style={{cursor: "pointer"}} onClick={ this.rowClick.bind('this', this.data.goals[i]._id)} >
+        <tr key={i} className="goalRow" style={rowStyle} onClick={ this.rowClick.bind('this', this.data.goals[i]._id)} >
           { this.renderToggles(this.data.goals[i]) }
           { this.renderActionIcons(this.data.goals[i]) }
           { this.renderIdentifier(this.data.goals[i]) }

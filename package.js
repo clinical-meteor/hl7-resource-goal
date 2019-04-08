@@ -1,6 +1,6 @@
 Package.describe({
   name: 'clinical:hl7-resource-goal',
-  version: '1.3.15',
+  version: '1.3.17',
   summary: 'HL7 FHIR Resource - Goal',
   git: 'https://github.com/clinical-meteor/hl7-resource-goal',
   documentation: 'README.md'
@@ -33,7 +33,6 @@ Package.onUse(function (api) {
   api.addFiles('lib/methods.js', ['client', 'server']);
 
   api.addFiles('server/rest.js', 'server');
-  api.addFiles('server/initialize.js', 'server');
 
   if(Package['clinical:fhir-vault-server']){
     api.use('clinical:fhir-vault-server@0.0.3');        
