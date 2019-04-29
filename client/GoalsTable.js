@@ -47,8 +47,7 @@ export class GoalsTable extends React.Component {
       return (
         <td className="toggle">
             <Toggle
-              defaultT
-              oggled={true}
+              defaultToggled={true}
             />
           </td>
       );
@@ -146,10 +145,9 @@ export class GoalsTable extends React.Component {
       newRow.identifier = get(this.data.goals[i], 'identifier[0].value');
 
       let rowStyle = {
-        color: 'black',
         cursor: 'pointer'
       }
-      if(get(this.data.goals[i], 'modifierExtension[0].valueBoolean') === true){
+      if(get(this.data.goals[i], 'modifierExtension[0]')){
         rowStyle.color = "orange";
       }
 
