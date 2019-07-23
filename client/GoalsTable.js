@@ -1,8 +1,6 @@
-import { Card, CardActions, CardMedia, CardText, CardTitle, Toggle } from 'material-ui';
+import { Toggle, Checkbox } from 'material-ui';
+
 import { FaTags, FaCode, FaPuzzlePiece, FaLock  } from 'react-icons/fa';
-import { IoIosWarning  } from 'react-icons/io';
-
-
 import { GoTrashcan } from 'react-icons/go'
 
 import React from 'react';
@@ -35,19 +33,19 @@ export class GoalsTable extends React.Component {
     return data;
   };
 
-  renderTogglesHeader(){
-    if (!this.props.hideToggle) {
+  renderCheckboxsHeader(){
+    if (!this.props.hideCheckbox) {
       return (
-        <th className="toggle">Toggle</th>
+        <th className="Checkbox"></th>
       );
     }
   }
-  renderToggles(patientId ){
-    if (!this.props.hideToggle) {
+  renderCheckboxs(patientId ){
+    if (!this.props.hideCheckbox) {
       return (
-        <td className="toggle">
-            <Toggle
-              defaultToggled={true}
+        <td className="Checkbox">
+            <Checkbox
+              defaultChecked={true}
             />
           </td>
       );
@@ -108,8 +106,10 @@ export class GoalsTable extends React.Component {
     Session.set('goalPageTabIndex', 2);
   };
   removeRecord(_id){
-    console.log('removeRecord', _id)
-    Goals._collection.remove({_id: _id})
+    console.log('Remove goal ', _id)
+    if(this.props.onRemoveRecord){
+      this.props.onRemoveRecord(_id);
+    }
   }
   showSecurityDialog(goal){
     console.log('showSecurityDialog', goal)
@@ -153,7 +153,7 @@ export class GoalsTable extends React.Component {
 
       tableRows.push(
         <tr key={i} className="goalRow" style={rowStyle} onClick={ this.rowClick.bind('this', this.data.goals[i]._id)} >
-          { this.renderToggles(this.data.goals[i]) }
+          { this.renderCheckboxs(this.data.goals[i]) }
           { this.renderActionIcons(this.data.goals[i]) }
           { this.renderIdentifier(this.data.goals[i]) }
 
@@ -168,7 +168,7 @@ export class GoalsTable extends React.Component {
       <Table id='goalsTable' hover >
         <thead>
           <tr>
-            { this.renderTogglesHeader() }
+            { this.renderCheckboxsHeader() }
             { this.renderActionIconsHeader() }
             { this.renderIdentifierHeader() }
             <th className='description'>Description</th>
@@ -189,8 +189,9 @@ GoalsTable.propTypes = {
   query: PropTypes.object,
   paginationLimit: PropTypes.number,
   hideIdentifier: PropTypes.bool,
-  hideToggle: PropTypes.bool,
-  hideActionIcons: PropTypes.bool
+  hideCheckbox: PropTypes.bool,
+  hideActionIcons: PropTypes.bool,
+  onRemoveRecord: PropTypes.func
 };
 ReactMixin(GoalsTable.prototype, ReactMeteorData);
 export default GoalsTable;

@@ -2,9 +2,10 @@ import React from 'react';
 import { ReactMeteorData } from 'meteor/react-meteor-data';
 import ReactMixin from 'react-mixin';
 import { Table } from 'react-bootstrap';
-import Toggle from 'material-ui/Toggle';
+import { Toggle, Checkbox } from 'material-ui';
 import PropTypes from 'prop-types';
 import { FaTags, FaCode, FaPuzzlePiece, FaLock  } from 'react-icons/fa';
+import { GoTrashcan } from 'react-icons/go'
 import { get } from 'lodash';
 
 Session.setDefault('deselectedActivities', []);
@@ -32,7 +33,6 @@ export default class ActivitiesTable extends React.Component {
     // if (CarePlans.find({'identifier.value':'alcohol-treatment-template'}).count() > 0) {
     //   let carePlanTemplate = CarePlans.find({'identifier.value':'alcohol-treatment-template'}).fetch()[0];
     //   //console.log("carePlanTemplate", carePlanTemplate);
-
     //   if (carePlanTemplate ) {
     //     data.activity = carePlanTemplate.activity;
     //   }
@@ -77,19 +77,19 @@ export default class ActivitiesTable extends React.Component {
 
     return data;
   }
-  renderTogglesHeader(){
-    if (!this.props.hideToggle) {
+  renderCheckboxHeader(){
+    if (!this.props.hideCheckbox) {
       return (
-        <th className="toggle">Toggle</th>
+        <th className="toggle"></th>
       );
     }
   }
-  renderToggles(patientId ){
-    if (!this.props.hideToggle) {
+  renderCheckbox(patientId ){
+    if (!this.props.hideCheckbox) {
       return (
-        <td className="toggle">
-            <Toggle
-              defaultToggled={true}
+        <td className="toggle" style={{width: '10px'}} >
+            <Checkbox
+              defaultChecked={true}
             />
           </td>
       );
@@ -116,14 +116,20 @@ export default class ActivitiesTable extends React.Component {
       );
     }
   }
-  renderActionIcons(actionIcons ){
+  renderActionIcons(goal){
     if (!this.props.hideActionIcons) {
+
+      let iconStyle = {
+        marginLeft: '4px', 
+        marginRight: '4px', 
+        marginTop: '4px', 
+        fontSize: '120%'
+      }
+
       return (
-        <td className='actionIcons' style={{minWidth: '120px'}}>
-          <FaLock style={{marginLeft: '2px', marginRight: '2px'}} />
-          <FaTags style={{marginLeft: '2px', marginRight: '2px'}} />
-          <FaCode style={{marginLeft: '2px', marginRight: '2px'}} />
-          <FaPuzzlePiece style={{marginLeft: '2px', marginRight: '2px'}} />          
+        <td className='actionIcons' style={{minWidth: '120px', marginTop: '2px'}}>
+          <FaTags style={iconStyle} onClick={this.showSecurityDialog.bind(this, goal)} />
+          <GoTrashcan style={iconStyle} onClick={this.removeRecord.bind(this, goal._id)} />  
         </td>
       );
     }
@@ -134,7 +140,20 @@ export default class ActivitiesTable extends React.Component {
     source[row][key] = value;
     this.setState({source});
   }
+  removeRecord(_id){
+    console.log('Remove activity ', _id)
+    if(this.props.onRemoveRecord){
+      this.props.onRemoveRecord(_id);
+    }
+  }
+  showSecurityDialog(activity){
+    console.log('showSecurityDialog', activity)
 
+    // Session.set('securityDialogResourceJson', Activities.findOne(get(activity, '_id')));
+    // Session.set('securityDialogResourceType', 'Activities');
+    // Session.set('securityDialogResourceId', get(activity, '_id'));
+    // Session.set('securityDialogOpen', true);
+  }
   rowClick(display){
     let deselectedActivities = Session.get('deselectedActivities');
 
@@ -153,7 +172,7 @@ export default class ActivitiesTable extends React.Component {
     for (var i = 0; i < this.data.activity.length; i++) {
       tableRows.push(
       <tr className='activityRow' key={i} style={{cursor: 'pointer'}} onClick={ this.rowClick.bind('this', this.data.activity[i].reference.display) }>
-        { this.renderToggles(this.data.activity[i]) }
+        { this.renderCheckbox(this.data.activity[i]) }
         { this.renderActionIcons(this.data.activity[i]) }
         { this.renderIdentifier(this.data.activity[i]) }
         <td className="description">{this.data.activity[i].detail.description}</td>
@@ -166,7 +185,7 @@ export default class ActivitiesTable extends React.Component {
       <Table id="activitysTable" hover >
         <thead>
           <tr>
-            { this.renderTogglesHeader() }
+            { this.renderCheckboxHeader() }
             { this.renderActionIconsHeader() }
             { this.renderIdentifierHeader() }
             <th className="description">Description</th>
@@ -188,8 +207,9 @@ ActivitiesTable.propTypes = {
   query: PropTypes.object,
   paginationLimit: PropTypes.number,
   hideIdentifier: PropTypes.bool,
-  hideToggle: PropTypes.bool,
-  hideActionIcons: PropTypes.bool
+  hideCheckbox: PropTypes.bool,
+  hideActionIcons: PropTypes.bool,
+  onRemoveRecord: PropTypes.func
 };
 ActivitiesTable.propTypes = {};
 ReactMixin(ActivitiesTable.prototype, ReactMeteorData);
