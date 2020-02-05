@@ -1,8 +1,15 @@
+
+import { 
+  Checkbox, 
+  Table, 
+  TableRow, 
+  TableCell,
+  TableBody
+} from '@material-ui/core';
+
 import React from 'react';
 import { ReactMeteorData } from 'meteor/react-meteor-data';
 import ReactMixin from 'react-mixin';
-import { Table } from 'react-bootstrap';
-import { Toggle, Checkbox } from 'material-ui';
 import PropTypes from 'prop-types';
 import { FaTags, FaCode, FaPuzzlePiece, FaLock  } from 'react-icons/fa';
 import { GoTrashcan } from 'react-icons/go'
@@ -80,25 +87,25 @@ export default class ActivitiesTable extends React.Component {
   renderCheckboxHeader(){
     if (!this.props.hideCheckbox) {
       return (
-        <th className="toggle"></th>
+        <TableCell className="toggle"></TableCell>
       );
     }
   }
   renderCheckbox(patientId ){
     if (!this.props.hideCheckbox) {
       return (
-        <td className="toggle" style={{width: '10px'}} >
+        <TableCell className="toggle" style={{width: '10px'}} >
             <Checkbox
               defaultChecked={true}
             />
-          </td>
+          </TableCell>
       );
     }
   }
   renderIdentifierHeader(){
     if (!this.props.hideIdentifier) {
       return (
-        <th className="identifier">Identifier</th>
+        <TableCell className="identifier">Identifier</TableCell>
       );
     }
   }
@@ -106,13 +113,13 @@ export default class ActivitiesTable extends React.Component {
     if (!this.props.hideIdentifier) {
       
       return (
-        <td className='identifier'>{ get(activity, 'identifier[0].value') }</td>       );
+        <TableCell className='identifier'>{ get(activity, 'identifier[0].value') }</TableCell>       );
     }
   }
   renderActionIconsHeader(){
     if (!this.props.hideActionIcons) {
       return (
-        <th className='actionIcons' style={{minWidth: '120px'}}>Actions</th>
+        <TableCell className='actionIcons' style={{minWidth: '120px'}}>Actions</TableCell>
       );
     }
   }
@@ -127,10 +134,10 @@ export default class ActivitiesTable extends React.Component {
       }
 
       return (
-        <td className='actionIcons' style={{minWidth: '120px', marginTop: '2px'}}>
+        <TableCell className='actionIcons' style={{minWidth: '120px', marginTop: '2px'}}>
           <FaTags style={iconStyle} onClick={this.showSecurityDialog.bind(this, goal)} />
           <GoTrashcan style={iconStyle} onClick={this.removeRecord.bind(this, goal._id)} />  
-        </td>
+        </TableCell>
       );
     }
   } 
@@ -171,30 +178,30 @@ export default class ActivitiesTable extends React.Component {
     let tableRows = [];
     for (var i = 0; i < this.data.activity.length; i++) {
       tableRows.push(
-      <tr className='activityRow' key={i} style={{cursor: 'pointer'}} onClick={ this.rowClick.bind('this', this.data.activity[i].reference.display) }>
+      <TableRow className='activityRow' key={i} style={{cursor: 'pointer'}} onClick={ this.rowClick.bind('this', this.data.activity[i].reference.display) }>
         { this.renderCheckbox(this.data.activity[i]) }
         { this.renderActionIcons(this.data.activity[i]) }
         { this.renderIdentifier(this.data.activity[i]) }
-        <td className="description">{this.data.activity[i].detail.description}</td>
-        <td className="goal hidden-on-phone">{this.data.activity[i].reference.display}</td>
-      </tr>);
+        <TableCell className="description">{this.data.activity[i].detail.description}</TableCell>        
+        <TableCell className="goal hidden-on-phone">{this.data.activity[i].reference.display}</TableCell>
+      </TableRow>);
     }
 
 
     return(
       <Table id="activitysTable" hover >
-        <thead>
-          <tr>
+        <TableHead>
+          <TableRow>
             { this.renderCheckboxHeader() }
             { this.renderActionIconsHeader() }
             { this.renderIdentifierHeader() }
-            <th className="description">Description</th>
-            <th className="goal hidden-on-phone">Associated Goal</th>
-          </tr>
-        </thead>
-        <tbody>
+            <TableCell className="description">Description</TableCell>
+            <TableCell className="goal hidden-on-phone">Associated Goal</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           { tableRows }
-        </tbody>
+        </TableBody>
       </Table>
 
     );

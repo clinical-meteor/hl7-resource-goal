@@ -6,14 +6,29 @@
 //
 // =======================================================================
 
+import { 
+  Grid,
+  Card,
+  Button,
+  CardHeader,
+  CardContent,
+  CardActions,
+  Typography,
+  TextField,
+  DatePicker
+} from '@material-ui/core';
 
-import { CardActions, CardText } from 'material-ui/Card';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 
-import RaisedButton from 'material-ui/RaisedButton';
+
+
 import React from 'react';
 import { ReactMeteorData } from 'meteor/react-meteor-data';
 import ReactMixin from 'react-mixin';
-import TextField from 'material-ui/TextField';
 import { get, set} from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -89,42 +104,42 @@ export default class GoalDetail extends React.Component {
 
     return (
       <div id={this.props.id} className="goalDetail">
-        <CardText>
+        <CardContent>
           <TextField
             id='descriptionInput'
-            ref='description'
+            //ref='description'
             name='description'
-            floatingLabelText='Description'
+            label='Description'
             hintText='Quit Smoking'
             value={ get(formData, 'description', '') }
             onChange={ this.changeState.bind(this, 'description')}
-            floatingLabelFixed={true}
+            // floatingLabelFixed={true}
             fullWidth
             /><br/>
           <TextField
             id='priorityInput'
-            ref='priority'
+            //ref='priority'
             name='priority'
-            floatingLabelText='Priority'
+            label='Priority'
             value={ get(formData, 'priority', '') }
             onChange={ this.changeState.bind(this, 'priority')}
             hintText='high | medium |low'
-            floatingLabelFixed={true}
+            // floatingLabelFixed={true}
             fullWidth
             /><br/>
           <TextField
             id='statusInput'
-            ref='status'
+            //ref='status'
             name='status'
-            floatingLabelText='Status'
+            label='Status'
             value={ get(formData, 'status', '')}
             onChange={ this.changeState.bind(this, 'status')}
             hintText='proposed | planned | accepted | rejected | in-progress | achieved | sustaining | on-hold | cancelled'
-            floatingLabelFixed={true}
+            // floatingLabelFixed={true}
             fullWidth
             /><br/>
 
-        </CardText>
+        </CardContent>
         <CardActions>
           { this.determineButtons(this.state.goalId) }
         </CardActions>
@@ -137,13 +152,13 @@ export default class GoalDetail extends React.Component {
     if (goalId) {
       return (
         <div>
-          <RaisedButton id="updateGoalButton" label="Save" primary={true} onClick={this.handleSaveButton.bind(this)} style={{marginRight: '20px'}} />
-          <RaisedButton id="deleteGoalButton" label="Delete" onClick={this.handleDeleteButton.bind(this)} />
+          <Button id="updateGoalButton" primary={true} onClick={this.handleSaveButton.bind(this)} style={{marginRight: '20px'}} >Save</Button>
+          <Button id="deleteGoalButton" onClick={this.handleDeleteButton.bind(this)} >Delete</Button>
         </div>
       );
     } else {
       return(
-        <RaisedButton id="saveGoalButton" label="Save" primary={true} onClick={this.handleSaveButton.bind(this)} />
+        <Button id="saveGoalButton" primary={true} onClick={this.handleSaveButton.bind(this)} >Save</Button>
       );
     }
   }
@@ -234,13 +249,13 @@ export default class GoalDetail extends React.Component {
           if (error) {
             console.log("error", error);
 
-            Bert.alert(error.reason, 'danger');
+            // Bert.alert(error.reason, 'danger');
           }
           if (result) {
             HipaaLogger.logEvent({eventType: "update", userId: Meteor.userId(), userName: Meteor.user().fullName(), collectionName: "Goals", recordId: self.data.goalId});
             Session.set('goalPageTabIndex', 1);
             Session.set('selectedGoal', false);
-            Bert.alert('Goal updated!', 'success');
+            // Bert.alert('Goal updated!', 'success');
           }
         });
     } else {
@@ -250,13 +265,13 @@ export default class GoalDetail extends React.Component {
       Goals._collection.insert(fhirGoalData, function(error, result) {
         if (error) {
           console.log("error", error);
-          Bert.alert(error.reason, 'danger');
+          // Bert.alert(error.reason, 'danger');
         }
         if (result) {
           HipaaLogger.logEvent({eventType: "create", userId: Meteor.userId(), userName: Meteor.user().fullName(), collectionName: "Goals", recordId: result});
           Session.set('goalPageTabIndex', 1);
           Session.set('selectedGoal', false);
-          Bert.alert('Goal added!', 'success');
+          // Bert.alert('Goal added!', 'success');
         }
       });
     }
@@ -270,13 +285,13 @@ export default class GoalDetail extends React.Component {
     let self = this;
     Goals._collection.remove({_id: this.state.goalId}, function(error, result){
       if (error) {
-        Bert.alert(error.reason, 'danger');
+        // Bert.alert(error.reason, 'danger');
       }
       if (result) {
         HipaaLogger.logEvent({eventType: "delete", userId: Meteor.userId(), userName: Meteor.user().fullName(), collectionName: "Goals", recordId: self.data.goalId});
         Session.set('goalPageTabIndex', 1);
         Session.set('selectedGoal', false);
-        Bert.alert('Goal removed!', 'success');
+        // Bert.alert('Goal removed!', 'success');
       }
     });
   }

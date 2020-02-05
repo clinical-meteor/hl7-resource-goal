@@ -1,4 +1,10 @@
-import { Toggle, Checkbox } from 'material-ui';
+import { 
+  Checkbox, 
+  Table, 
+  TableRow, 
+  TableCell,
+  TableBody
+} from '@material-ui/core';
 
 import { FaTags, FaCode, FaPuzzlePiece, FaLock  } from 'react-icons/fa';
 import { GoTrashcan } from 'react-icons/go'
@@ -6,7 +12,6 @@ import { GoTrashcan } from 'react-icons/go'
 import React from 'react';
 import { ReactMeteorData } from 'meteor/react-meteor-data';
 import ReactMixin from 'react-mixin';
-import { Table } from 'react-bootstrap';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -36,25 +41,25 @@ export class GoalsTable extends React.Component {
   renderCheckboxsHeader(){
     if (!this.props.hideCheckbox) {
       return (
-        <th className="Checkbox"></th>
+        <TableCell className="Checkbox"></TableCell>
       );
     }
   }
   renderCheckboxs(patientId ){
     if (!this.props.hideCheckbox) {
       return (
-        <td className="Checkbox">
+        <TableCell className="Checkbox">
             <Checkbox
               defaultChecked={true}
             />
-          </td>
+          </TableCell>
       );
     }
   }
   renderIdentifierHeader(){
     if (!this.props.hideIdentifier) {
       return (
-        <th className="identifier">Identifier</th>
+        <TableCell className="identifier">Identifier</TableCell>
       );
     }
   }
@@ -62,13 +67,13 @@ export class GoalsTable extends React.Component {
     if (!this.props.hideIdentifier) {
       
       return (
-        <td className='identifier'>{ get(goals, 'identifier[0].value') }</td>       );
+        <TableCell className='identifier'>{ get(goals, 'identifier[0].value') }</TableCell>       );
     }
   }
   renderActionIconsHeader(){
     if (!this.props.hideActionIcons) {
       return (
-        <th className='actionIcons' style={{minWidth: '120px'}}>Actions</th>
+        <TableCell className='actionIcons' style={{minWidth: '120px'}}>Actions</TableCell>
       );
     }
   }
@@ -92,11 +97,11 @@ export class GoalsTable extends React.Component {
 
 
       return (
-        <td className='actionIcons' style={{minWidth: '120px', marginTop: '2px'}}>
+        <TableCell className='actionIcons' style={{minWidth: '120px', marginTop: '2px'}}>
           {/* <IoIosWarning style={warningStyle} onClick={this.showSecurityDialog.bind(this, goal)} /> */}
           <FaTags style={iconStyle} onClick={this.showSecurityDialog.bind(this, goal)} />
           <GoTrashcan style={iconStyle} onClick={this.removeRecord.bind(this, goal._id)} />  
-        </td>
+        </TableCell>
       );
     }
   } 
@@ -152,33 +157,33 @@ export class GoalsTable extends React.Component {
       }
 
       tableRows.push(
-        <tr key={i} className="goalRow" style={rowStyle} onClick={ this.rowClick.bind('this', this.data.goals[i]._id)} >
+        <TableRow key={i} className="goalRow" style={rowStyle} onClick={ this.rowClick.bind('this', this.data.goals[i]._id)} >
           { this.renderCheckboxs(this.data.goals[i]) }
           { this.renderActionIcons(this.data.goals[i]) }
           { this.renderIdentifier(this.data.goals[i]) }
 
-          <td className='description'>{ newRow.description }</td>
-          <td className='priority'>{ newRow.priority }</td>
-          <td className='status'>{ newRow.status }</td>
-        </tr>
+          <TableCell className='description'>{ newRow.description }</TableCell>
+          <TableCell className='priority'>{ newRow.priority }</TableCell>
+          <TableCell className='status'>{ newRow.status }</TableCell>
+        </TableRow>
       )
     }
 
     return(
       <Table id='goalsTable' hover >
-        <thead>
-          <tr>
+        <TableHeader>
+          <TableRow>
             { this.renderCheckboxsHeader() }
             { this.renderActionIconsHeader() }
             { this.renderIdentifierHeader() }
-            <th className='description'>Description</th>
-            <th className='priority'>Priority</th>
-            <th className='status'>Status</th>
-          </tr>
-        </thead>
-        <tbody>
+            <TableCell className='description'>Description</TableCell>
+            <TableCell className='priority'>Priority</TableCell>
+            <TableCell className='status'>Status</TableCell>             
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           { tableRows }
-        </tbody>
+        </TableBody>
       </Table>
     );
   }
